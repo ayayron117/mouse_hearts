@@ -38,17 +38,37 @@ mouse_seurat <- readRDS(file.path(seurats_path, "integrated_mouse_seurat.rds"))
 # Annotation using SingleR
 DefaultAssay(mouse_seurat) <- "RNA"
 
+# Use Benayoun B et al. bulk RNA seq data as reference
 mouse_ref <- MouseRNAseqData()
 
 mouse_assay_dat <- GetAssayData(mouse_seurat)
 
-pred_mouse_seurat <- SingleR(test = mouse_assay_dat, 
+pred_mouse_dat <- SingleR(test = mouse_assay_dat, 
                           ref = mouse_ref, 
                           labels = mouse_ref$label.main)
 
-saveRDS(pred_mouse_seurat, file.path(seurats_path, "annotated_mouse_seurat.rds"))
 
 ```
+
+```{r}
+
+seurat_row_names <- row.names(mouse_seurat@meta.data)
+pred_row_names <- row.names(pred_mouse_dat)
+
+# Add singleR annotation results to the seurat object
+mouse_seurat <- AddMetaData(mouse_seurat, pred_mouse_dat$labels, col.name = "celltype_BenB")
+
+saveRDS(mouse_seurat, file.path(seurats_path, "annotated_mouse_seurat.rds"))
+
+```
+
+
+
+
+
+
+
+
 
 
 
