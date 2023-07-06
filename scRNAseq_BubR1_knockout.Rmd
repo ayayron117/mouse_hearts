@@ -1,0 +1,19 @@
+---
+title: "BubR1 Knockout Project"
+author: "Aaron Mohammed"
+date: "2023-07-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(Seurat)
+library(ggplot2)
+library(SingleR)
+library(celldex)
+library(stringr)
+
+mouse_seurat <- readRDS(combined, file.path(seurats_path, "integrated_mouse_seurat.rds"))
+
+
+```
