@@ -95,6 +95,56 @@ umap_knock_clust
 
 ```
 
+```{r}
+
+pdf(file.path(output_path, "wildtype_UMAP.pdf"), height = 10, width = 14)
+umap_wild_clust
+dev.off()
+
+pdf(file.path(output_path, "knockout_UMAP.pdf"), height = 10, width = 14)
+umap_knock_clust
+dev.off()
+
+```
+```{r}
+
+PCAPlot(wild_sub, group.by="celltype_BenB", label = TRUE) + ggtitle("Wildtype PCA")
+PCAPlot(knock_sub, group.by="celltype_BenB", label = TRUE) + ggtitle("Knockout PCA")
+
+```
+```{r}
+
+library(clusterProfiler)
+
+wild_cardio_cellz <- CellSelector(umap_wild_clust)
+unique(wild_sub@meta.data[wild_cardio_cellz,"seurat_clusters"])
+
+cardio_clust_A <- 2
+cardio_clust_B <- 8
+
+knock_cardio_cellz <- CellSelector(umap_knock_clust)
+unique(knock_sub@meta.data[knock_cardio_cellz,"seurat_clusters"])
+
+knock_clust_A <- 2
+knock_clust_B <- 8
+
+```
+
+```{r}
+
+Idents(mouse_seurat) <- "seurat_clusters"
+
+cardio_sub_A <- subset(mouse_seurat, idents = 2)
+cardio_sub_B <- subset(mouse_seurat, idents = 8)
+
+Idents(cardio_sub_A) <- "celltype_BenB"
+Idents(cardio_sub_B) <- "celltype_BenB"
+
+cardio_sub_A <- subset(cardio_sub_A, idents = "Cardiomyocytes")
+cardio_sub_B <- subset(cardio_sub_B, idents = "Cardiomyocytes")
+
+```
+
 
 
 
