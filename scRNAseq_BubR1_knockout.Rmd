@@ -13,7 +13,47 @@ library(SingleR)
 library(celldex)
 library(stringr)
 
-mouse_seurat <- readRDS(combined, file.path(seurats_path, "integrated_mouse_seurat.rds"))
+proj_path <- "/Users/asm/Creighton/core_lab/scRNAseq_Ren"
+seurats_path <- file.path(proj_path, "seurats")
 
+output_path <- file.path(proj_path, "output")
+dir.create(output_path)
+
+celltype_umaps_path <- file.path(output_path, "celltype_umaps")
+dir.create(celltype_umaps_path)
+
+dge_path <- file.path(output_path, "dge_results")
+dir.create(dge_path)
 
 ```
+
+```{r}
+
+mouse_seurat <- readRDS(file.path(seurats_path, "integrated_mouse_seurat.rds"))
+
+```
+
+```{r}
+
+# Annotation using SingleR
+DefaultAssay(mouse_seurat) <- "RNA"
+
+mouse_ref <- MouseRNAseqData()
+
+mouse_assay_dat <- GetAssayData(mouse_seurat)
+
+pred_mouse_seurat <- SingleR(test = mouse_assay_dat, 
+                          ref = mouse_ref, 
+                          labels = mouse_ref$label.main)
+
+saveRDS(pred_mouse_seurat, file.path(seurats_path, "annotated_mouse_seurat.rds"))
+
+```
+
+
+
+
+
+
+
+
