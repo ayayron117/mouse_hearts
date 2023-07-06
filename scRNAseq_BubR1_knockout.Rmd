@@ -145,11 +145,66 @@ cardio_sub_B <- subset(cardio_sub_B, idents = "Cardiomyocytes")
 
 ```
 
+```{r}
+
+# DGE analysis 
+Idents(cardio_sub_A) <- "sample_id"
+cardio_A_knock_vs_WT <- FindMarkers(cardio_sub_A, ident.1 = "knockout", ident.2 = "wildtype", logfc.threshold= 0)
+
+Idents(cardio_sub_B) <- "sample_id"
+cardio_B_knock_vs_WT <- FindMarkers(cardio_sub_B, ident.1 = "knockout", ident.2 = "wildtype", logfc.threshold= 0)
+
+```
+```{r}
+
+cardio_A_knock_vs_WT <- cardio_A_knock_vs_WT[order(-cardio_A_knock_vs_WT$avg_log2FC), ]
+cardio_B_knock_vs_WT <- cardio_B_knock_vs_WT[order(-cardio_B_knock_vs_WT$avg_log2FC), ]
+
+```
+
+```{r}
+
+write.csv(cardio_A_knock_vs_WT, file.path(output_path, "knockout_vs_WT_right_cardio.csv"))
+write.csv(cardio_B_knock_vs_WT, file.path(output_path, "knockout_vs_WT_left_cardio.csv"))
+
+```
+
+```{r}
+
+library(EnhancedVolcano)
 
 
+cardio_A_knock_vs_WT_plot <- EnhancedVolcano(cardio_A_knock_vs_WT, 
+                x="avg_log2FC", y="p_val", 
+                lab= row.names(cardio_A_knock_vs_WT),
+                pCutoff = 0.05, FCcutoff = 0.3,
+                title = "Knockout vs WT - Right Cardiomyocyte Cluster",
+                subtitle = bquote(italic("FC cutoff = 0.3     p-value cutoff = 0.05")))
 
+cardio_A_knock_vs_WT_plot
 
+cardio_B_knock_vs_WT_plot <- EnhancedVolcano(cardio_B_knock_vs_WT, 
+                x="avg_log2FC", y="p_val", 
+                lab= row.names(cardio_B_knock_vs_WT),
+                pCutoff = 0.05, FCcutoff = 0.3,
+                title = "Knockout vs WT - Left Cardiomyocyte Cluster",
+                subtitle = bquote(italic("FC cutoff = 0.3     p-value cutoff = 0.05")))
 
+cardio_B_knock_vs_WT_plot
+
+```
+
+```{r}
+
+pdf(file.path(output_path, "KO_vs_WT_right_cardio_plot.pdf"), height = 10, width = 14)
+cardio_A_knock_vs_WT_plot
+dev.off()
+
+pdf(file.path(output_path, "KO_vs_WT_left_cardio_plot.pdf"), height = 10, width = 14)
+cardio_B_knock_vs_WT_plot
+dev.off()
+
+```
 
 
 
