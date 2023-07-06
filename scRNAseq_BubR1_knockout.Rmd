@@ -29,7 +29,10 @@ dir.create(dge_path)
 
 ```{r}
 
-mouse_seurat <- readRDS(file.path(seurats_path, "integrated_mouse_seurat.rds"))
+# mouse_seurat <- readRDS(file.path(seurats_path, "integrated_mouse_seurat.rds"))
+
+mouse_seurat <- readRDS(file.path(seurats_path, "annotated_mouse_seurat.rds"))
+
 
 ```
 
@@ -58,10 +61,39 @@ pred_row_names <- row.names(pred_mouse_dat)
 # Add singleR annotation results to the seurat object
 mouse_seurat <- AddMetaData(mouse_seurat, pred_mouse_dat$labels, col.name = "celltype_BenB")
 
-saveRDS(mouse_seurat, file.path(seurats_path, "annotated_mouse_seurat.rds"))
+# saveRDS(mouse_seurat, file.path(seurats_path, "annotated_mouse_seurat.rds"))
 
 ```
 
+```{r}
+
+DefaultAssay(mouse_seurat) <- "integrated"
+
+mouse_seurat <- ScaleData(mouse_seurat, verbose = FALSE)
+mouse_seurat <- RunPCA(mouse_seurat, npcs = 30, verbose = FALSE)
+mouse_seurat <- RunUMAP(mouse_seurat, reduction = "pca", dims = 1:30)
+mouse_seurat <- FindNeighbors(mouse_seurat, reduction = "pca", dims = 1:30)
+mouse_seurat <- FindClusters(mouse_seurat, resolution = 0.5)
+
+```
+
+```{r}
+
+Idents(mouse_seurat) <- "sample_id"
+wild_sub <- subset(mouse_seurat, idents = "wildtype")
+knock_sub <- subset(mouse_seurat, idents = "knockout")
+
+```
+
+```{r}
+
+umap_wild_clust <- UMAPPlot(wild_sub, group.by="celltype_BenB", label = TRUE) + ggtitle("Wildtype UMAP")
+umap_wild_clust
+
+umap_knock_clust <- UMAPPlot(knock_sub, group.by="celltype_BenB", label = TRUE) + ggtitle("Knockout UMAP")
+umap_knock_clust
+
+```
 
 
 
